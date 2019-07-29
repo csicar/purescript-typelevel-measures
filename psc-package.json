@@ -6,6 +6,7 @@
     "console",
     "effect",
     "prelude",
-    "psci-support"
+    "psci-support",
+    "typelevel-prelude"
   ]
 }
