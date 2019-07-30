@@ -4,7 +4,7 @@ import Data.Type.Units
 import Data.Type.Units.SI
 
 import Data.Symbol (SProxy(..))
-import Data.Type.Numbers (IProxy, N1, N2, N3, Neg, P0, P1, P2, P3, P4, P5, P8, Pos, Succ, Z, P10, minusOne, one, parseInt, plus, prod, undefined)
+import Data.Type.Numbers (IProxy, N1, N2, N3, Neg, P0, P1, P10, P2, P3, P4, P5, P8, Pos, Succ, Z, N4, minusOne, one, parseInt, plus, prod, undefined)
 import Effect (Effect)
 import Effect.Console (log)
 import Prelude (Unit, discard, show)
@@ -96,6 +96,11 @@ t14' = two `prod` minusOne
 t15 :: IProxy P4
 t15 = minusTwo `prod` minusTwo
 
+t16 :: IProxy N2
+t16 = parseInt (undefined :: SProxy "-2")
+
+t17 :: IProxy N4
+t17 = parseInt (undefined :: SProxy "-4")
 
 -- Test Add Rows
 
@@ -172,10 +177,8 @@ tt2 :: Measured Int
   )
 tt2 = m4 ** m5
 
-
-
 distance :: Int : Meter P1 ()
-distance = (const 10) ** meter
+distance = liftV 10 ** meter
 
 s :: Int : Sec N1()
 s = Measured 1
@@ -183,9 +186,26 @@ s = Measured 1
 speed :: Int : Meter P1 * Sec N1 ()
 speed = meter // sec
 
+avgSpeed :: Int : Meter P1 () -> Int : Sec P1 () -> Int : Meter P1 * Sec N1 ()
+avgSpeed a b = a // b
+
+
+speedOver10m :: Int : Meter P1 * Sec N1 ()
+speedOver10m = avgSpeed distance (liftV 5 ** sec)
+
+energyInBarOfChocolate :: Int : Joule ()
+energyInBarOfChocolate = liftV 123_3.4 ** joule
+
+forceOver5Meter :: Int : Newton ()
+forceOver5Meter = energyInBarOfChocolate // (liftV 5 ** meter)
+
+typeInferenceTest :: Int : Kg P1 * Meter P2 * Sec N3 * ()
+typeInferenceTest = forceOver5Meter ** liftV 5 ** meter // sec
+
 
 main :: Effect Unit
 main = do
   log (show t)
   log (show (Measured 12 :: Int : Meter P5 * Sec N2 ()))
+  log (show (forceOver5Meter))
   log "Done"
