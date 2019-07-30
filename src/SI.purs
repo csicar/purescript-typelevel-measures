@@ -63,7 +63,7 @@ type Kelvin r = (kelvin :: KelvinT | r)
 kelvin :: ∀t. Semiring t => t : Kelvin*()/()
 kelvin = oneM
 
-type Newton v = v : Kg * Meter * () / Sec * Sec * ()
+type Newton  v a b = v : Kg * Meter * a / Sec * Sec * b
 
 
 

@@ -36,14 +36,6 @@ instance fraction1 :: (FractionRl above below above' below')
 else
 instance fractionDoNothing :: FractionRl c c' c c'
 
--- instance skipFirst :: (FractionRl c c' r r') => FractionRl (Cons sym ty c) c' r (Cons sym ty r')
-
--- instance fractionBoth :: Fraction (meter :: a | c) (meter :: a | c') c c'
--- instance fractionBoth :: (Cons "meter" a c ac) => Fraction ac (meter :: a | c') c c'
--- else
--- instance doNothing :: Fraction c c' c c'
-
--- infix 3 type PosMeasured as :
 type Apply t (f :: Type -> Type) = f t
 infix 3 type  Apply as :
 infixr 6 type RowApply as *

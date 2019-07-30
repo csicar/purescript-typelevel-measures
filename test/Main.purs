@@ -18,5 +18,5 @@ m1 = valOf 11
 m2 :: Int : () / Sec*Sec*()
 m2 = valOf 34
 
-x :: Int : Newton
+x :: (Newton Int () ())
 x = m1 `mul` m2
