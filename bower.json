@@ -7,6 +7,10 @@
 		"bower_components",
 		"output"
 	],
+	"repository": {
+		"url": "https://github.com/csicar/purescript-typelevel-measures",
+		"type": "git"
+	},
 	"dependencies": {
 		"purescript-prelude": "^4.1.1",
 		"purescript-typelevel-prelude": "^5.0.0",
