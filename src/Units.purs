@@ -1,85 +1,148 @@
 module Data.Type.Units where
 
-import Effect (Effect)
-import Effect.Console (log)
-import Prelude (class Apply, class Semiring, class Show, Unit, one, otherwise, show, zero, (*), (<>))
-import Prelude as P
-import Prim.Row as Row
+import Prelude
+import Type.Prelude
+
 import Prim.RowList (kind RowList, Cons, Nil)
-import Type.Prelude (class IsSymbol, class Union, class RowToList)
-import Type.Row (RowApply, class Cons)
-import Type.RowList (class RowListAppend)
-
-main :: Effect Unit
-main = do
-  log "Hello sailor!"
-
-
-class Fraction (c :: # Type ) (c'  :: # Type) (s :: # Type) (s' :: #Type) | c c' -> s s'
-
-class FractionRl (c :: RowList) (c' :: RowList) (s :: RowList) (s' :: RowList) | c c' -> s s'
-
-instance rowListToRow :: 
-  ( FractionRl rc rc' rs rs'
-  , RowToList c rc
-  , RowToList c' rc'
-  , RowToList s rs
-  , RowToList s' rs'
-  ) => Fraction c c' s s' 
-
-
-instance fractionBoth :: (FractionRl above below above' below') 
-  => FractionRl (Cons sym ty above) (Cons sym ty below) above' below'
-else
-instance fraction1 :: (FractionRl above below above' below')
-  => FractionRl (Cons s1 t1 (Cons s1 t2 above)) (Cons s1 t2 below) (Cons s1 t1 above) below
-else
-instance fractionDoNothing :: FractionRl c c' c c'
-
-type Apply t (f :: Type -> Type) = f t
-infix 3 type  Apply as :
-infixr 6 type RowApply as *
-
-class Mul u (a :: # Type) (a' :: # Type) (b :: # Type) (b' :: #Type) (c :: # Type) (c' :: # Type) where
-  mul :: Measured u a a' -> Measured u b b' -> Measured u c c'
-
-instance nilMul :: (Semiring v, Union a b c, Union a' b' c', Fraction c c' s s') => Mul v a a' b b' s s' where
-  mul (Measured a) (Measured b) = Measured (a*b)
-
-mult = mul
-
-oneM :: ∀v above below. Semiring v => Measured v above below
-oneM = valOf one
-
--- | value of type v with unit above / below
-data Measured v (above :: # Type) (below :: # Type) = Measured v
-
-type PosMeasured v (u :: # Type) = Measured v u
-
-type Divide (a :: # Type) (x :: # Type) v = Measured v a x
-infixr 5 type Divide as /
-
-data Measure (t :: RowList)
+import Type.Data.RowList (RLProxy(..))
 
 
 foreign import undefined :: ∀a. a
 
-class ShowRow (t :: RowList) where
-  showRow :: Measure t -> String
+-- Nats and Ints
+foreign import kind Nat
+foreign import data Z :: Nat
+foreign import data Succ :: Nat -> Nat
 
-instance showNil :: ShowRow Nil where
-  showRow _ = ""
+data NProxy (n :: Nat)
 
-instance showCons ∷ (Show ty, ShowRow rest) => ShowRow (Cons sym ty rest) where
-  showRow t = (show (undefined :: ty)) <> str
-    where
-      str = case showRow (undefined :: Measure rest) of
-        "" -> ""
-        rest -> "*" <> rest
+foreign import kind Int
+foreign import data Pos :: Nat -> Int
+foreign import data Neg :: Nat -> Int
+
+data IProxy (i :: Int)
+
+type P0 = Pos Z
+type P1 = Pos (Succ Z)
+type P2 = Pos (Succ (Succ Z))
+type P3 = Pos (Succ (Succ (Succ Z)))
+type P4 = Pos (Succ (Succ (Succ (Succ Z))))
+type P5 = Pos (Succ (Succ (Succ (Succ (Succ Z)))))
+
+type N0 = Neg Z
+type N1 = Neg (Succ Z)
+type N2 = Neg (Succ (Succ Z))
+type N3 = Neg (Succ (Succ (Succ Z)))
+
+class NatToValue (a :: Nat) where
+  natToValue :: NProxy a -> Int
+
+instance toIntZ ∷ NatToValue Z where
+  natToValue _ = 0
+
+instance toIntSucc ∷ NatToValue a => NatToValue (Succ a) where
+  natToValue _ = 1 + (natToValue (undefined :: NProxy a))
+
+class IntToValue (a :: Int) where
+  intToValue :: IProxy a -> Int
+
+instance toIntPos :: NatToValue a => IntToValue (Pos a) where
+  intToValue _ = natToValue (undefined :: NProxy a)
+
+instance toIntNeg ∷ NatToValue a => IntToValue (Neg a) where
+  intToValue _ = - natToValue (undefined :: NProxy a)
+
+instance showZ ∷ Show (NProxy Z) where
+  show a = show $ natToValue a
 
 
-instance showMeasured :: (Show v, RowToList u u', RowToList d d', ShowRow u', ShowRow d') => Show (Measured v u d) where
-  show (Measured v) = show v <> " " <> showRow (undefined :: Measure u') <> "/" <> showRow (undefined :: Measure d')
+instance showSucc ∷ (NatToValue a) => Show (NProxy (Succ a)) where
+  show a = show $ natToValue a
 
-valOf :: ∀v (u :: # Type) (d :: # Type). v -> Measured v u d
-valOf u = Measured u
+instance showPos ∷ (NatToValue a) => Show (IProxy (Pos a)) where
+   show a = show $ intToValue a
+
+instance showNeg ∷ (NatToValue a) => Show (IProxy (Neg a)) where
+  show a = show $ intToValue a
+
+
+
+
+-- Addition
+
+class Sum (a :: Int) (b :: Int) (c :: Int) | a b -> c
+
+
+-- (+ S a) + (+ b) = (+ S (a + b))
+instance addPos :: (Sum (Pos a) (Pos b) (Pos c')) =>  Sum (Pos (Succ a)) (Pos b) (Pos (Succ c'))
+
+-- (Pos (Succ a)) + (Neg (Succ b)) = a+b
+instance addPosNegSucc ∷ (Sum (Pos a) (Neg b) c) => Sum (Pos (Succ a)) (Neg (Succ b)) c
+
+instance addNegPosSucc :: (Sum (Neg a) (Pos b) c) => Sum (Neg (Succ a)) (Pos (Succ b)) c
+
+instance addNegSucc ∷ (Sum (Neg a) (Neg b) (Neg c')) => Sum (Neg (Succ a)) (Neg b) (Neg (Succ c'))
+
+instance addPosZ :: Sum (Pos Z) (Pos b) (Pos b)
+instance addNegZ :: Sum (Neg Z) (Neg b) (Neg b)
+instance addNegPosZ :: Sum (Neg (Succ a)) (Pos Z) (Neg (Succ a))
+instance addPosNegZ :: Sum (Pos Z) (Neg (Succ b)) (Neg (Succ b))
+instance addZZ :: Sum (Neg Z) (Pos Z) (Pos Z)
+instance addZZ' :: Sum (Pos Z) (Neg Z) (Pos Z)
+
+plus :: ∀a b c. Sum a b c => IProxy a -> IProxy b -> IProxy c
+plus _ _ = (undefined :: IProxy c)
+
+zero :: IProxy P0
+zero = undefined
+
+one :: IProxy P1
+one = undefined
+
+minusOne :: IProxy N1
+minusOne = undefined
+
+data Measured v (u :: # Type) = Measured v
+
+foreign import kind Measure
+data MProxy (m :: Measure)
+data MeasureExp (m :: Measure) (exp :: Int)
+
+foreign import data MeterT :: Measure
+type Meter r = (meter :: MeasureExp MeterT P1 | r)
+foreign import data SecT :: Measure
+type Sec r = (sec :: MeasureExp SecT P1 | r)
+
+class InsertAddRowList (list :: RowList) (sym :: Symbol) ty (result :: RowList) | list sym ty -> result
+
+-- instance insertAddSame ∷ (Sum ty ty2 sum) => InsertAddRowList (Cons sym ty tail) sym ty2 (Cons sym sum tail)
+instance insertAddSame ∷ (Sum exp exp2 sum) => InsertAddRowList (Cons sym (MeasureExp ty exp) tail) sym (MeasureExp ty2 exp2) (Cons sym (MeasureExp ty sum) tail)
+else
+-- instance insertAddDifferenct ∷ (InsertAddRowList tail sym2 ty2 tail') => InsertAddRowList (Cons sym1 ty1 tail) sym2 ty2 (Cons sym1 ty1 tail')
+instance insertAddDifferenct ∷ (InsertAddRowList tail sym2 ty2 tail') => InsertAddRowList (Cons sym1 ty1 tail) sym2 ty2 (Cons sym1 ty1 tail')
+
+instance insertNew :: InsertAddRowList Nil sym (MeasureExp m exp) (Cons sym (MeasureExp m exp) Nil)
+
+insert :: ∀a b c ty. (InsertAddRowList a b ty c) => RLProxy a -> SProxy b -> ty -> RLProxy c
+insert a b = undefined
+
+
+class AddRowLists (a :: RowList) (b :: RowList) (sum :: RowList) | a b -> sum
+
+instance addRowListCons :: (InsertAddRowList other sym ty other', AddRowLists tail other' result) => AddRowLists (Cons sym ty tail) other result
+
+instance addRowListNil :: AddRowLists Nil other other
+
+addRowLists :: ∀a b sum. (AddRowLists a b sum) => RLProxy a -> RLProxy b -> RLProxy sum
+addRowLists a b = undefined
+
+class AddRows (a :: # Type) (b :: # Type) (sum :: #Type) | a b -> sum
+
+instance rowToRowList :: (AddRowLists ra rb rc, RowToList a ra, RowToList b rb, RowToList c rc, ListToRow ra a, ListToRow rb b, ListToRow rc c) => AddRows a b c
+
+addRows :: ∀a b sum. (AddRows a b sum) => RProxy a -> RProxy b -> RProxy sum
+addRows a b = undefined
+
+
+mult :: ∀a b c v. AddRows a b c => Semiring v => Measured v a -> Measured v b -> Measured v c
+mult (Measured a) (Measured b) = Measured (a*b)
