@@ -1,5 +1,6 @@
 {
 	"name": "purescript-typelevel-measures",
+	"license": "MIT",
 	"ignore": [
 		"**/.*",
 		"node_modules",
