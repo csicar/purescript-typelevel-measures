@@ -8,7 +8,9 @@ import Data.Maybe (Maybe(..))
 import Prim.Row as Row
 import Prim.RowList (kind RowList, Cons, Nil)
 import Prim.Symbol as Symbol
+import Type.Data.Boolean (class If)
 import Type.Data.RowList (RLProxy(..))
+import Type.Data.Symbol (class Equals)
 
 foreign import undefined :: ∀a. a
 
@@ -161,31 +163,45 @@ prod :: ∀a b c. Product a b c => IProxy a -> IProxy b -> IProxy c
 prod _ _ = (undefined :: IProxy c)
 
 -- Parsing
-class ParseNumber (sym :: Symbol) (int :: Int) | int -> sym, sym -> int
+class ParseNumber (sym :: Symbol) (nat :: Nat) | nat -> sym, sym -> nat
 
 
-instance parseLit0 :: ParseNumber "0" (Pos Z)
+-- a * 10 = -1
+instance parseLit0 :: ParseNumber "0" Z
 else
-instance parseLit1 :: ParseNumber "1" (Pos (Succ Z))
+instance parseLit1 :: ParseNumber "1" (Succ Z)
 else
-instance parseLit2 :: ParseNumber "2" (Pos (Succ (Succ Z)))
+instance parseLit2 :: ParseNumber "2" (Succ (Succ Z))
 else
-instance parseLit3 :: ParseNumber "3" (Pos (Succ (Succ (Succ Z))))
+instance parseLit3 :: ParseNumber "3" (Succ (Succ (Succ Z)))
 else
-instance parseLit4 :: ParseNumber "4" (Pos (Succ (Succ (Succ (Succ Z)))))
+instance parseLit4 :: ParseNumber "4" (Succ (Succ (Succ (Succ Z))))
 else
-instance parseLit5 :: ParseNumber "5" (Pos (Succ (Succ (Succ (Succ (Succ Z))))))
+instance parseLit5 :: ParseNumber "5" (Succ (Succ (Succ (Succ (Succ Z)))))
 else
-instance parseLit6 :: ParseNumber "6" (Pos (Succ (Succ (Succ (Succ (Succ (Succ Z)))))))
+instance parseLit6 :: ParseNumber "6" (Succ (Succ (Succ (Succ (Succ (Succ Z))))))
 else
-instance parseLit7 :: ParseNumber "7" (Pos (Succ (Succ (Succ (Succ (Succ (Succ (Succ Z))))))))
+instance parseLit7 :: ParseNumber "7" (Succ (Succ (Succ (Succ (Succ (Succ (Succ Z)))))))
 else
-instance parseLit8 :: ParseNumber "8" (Pos (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ Z)))))))))
+instance parseLit8 :: ParseNumber "8" (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ Z))))))))
 else
-instance parseLit9 :: ParseNumber "9" (Pos (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ Z))))))))))
+instance parseLit9 :: ParseNumber "9" (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ Z)))))))))
 else
-instance parseCons :: (ParseNumber head msd, Symbol.Cons head tail sym, Product msd P10 high, ParseNumber tail lower, Sum high lower res) => ParseNumber sym res
+instance parseCons :: (ParseNumber head msd, Symbol.Cons head tail sym, Product (Pos msd) P10 high, ParseNumber tail lower, Sum high (Pos lower) (Pos res)) => ParseNumber sym res
+
+parseNat :: ∀a sym. ParseNumber sym a => SProxy sym -> NProxy a
+parseNat _ = undefined
+
+class ParseInt (sym :: Symbol) (int :: Int) | int -> sym, sym -> int
+
+instance parseMinus :: 
+   ( Equals "-" head isMinus
+   , If isMinus (IProxy (Neg natValue)) (IProxy (Pos natValue)) (IProxy int)
+   , If isMinus (SProxy tail) (SProxy sym) (SProxy numberSymbol)
+   , Symbol.Cons head tail sym
+   , ParseNumber numberSymbol natValue
+   ) => ParseInt sym int
 
 
-parseInt :: ∀a sym. ParseNumber sym a => SProxy sym -> IProxy a
+parseInt :: ∀a sym. ParseInt sym a => SProxy sym -> IProxy a
 parseInt _ = undefined
