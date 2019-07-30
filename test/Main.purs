@@ -88,11 +88,13 @@ t14 = insert
 t15 :: RLProxy (Cons "meter" (MeasureExp MeterT P2) (Cons "sec" (MeasureExp MeterT P1) Nil)) -> SProxy "meter" -> (MeasureExp MeterT P3) -> RLProxy (Cons "meter" (MeasureExp MeterT P5) (Cons "sec" (MeasureExp MeterT P1) Nil))
 t15 = insert
 
-t16 :: RLProxy (Cons "meter" (MeasureExp MeterT P1) (Cons "sec" (MeasureExp MeterT P2) Nil)) -> SProxy "sec" -> (MeasureExp MeterT P2) -> RLProxy (Cons "meter" (MeasureExp MeterT P1) (Cons "sec" (MeasureExp MeterT P4) Nil))
+t16 :: RLProxy (Cons "meter" (MeasureExp MeterT P1) (Cons "sec" (MeasureExp SecT P2) Nil)) -> SProxy "sec" -> (MeasureExp SecT P2) -> RLProxy (Cons "meter" (MeasureExp MeterT P1) (Cons "sec" (MeasureExp SecT P4) Nil))
 t16 = insert
 
-t17 :: RLProxy (Cons "meter" (MeasureExp MeterT P1) (Cons "sec" (MeasureExp MeterT P2) Nil)) -> SProxy "sec" -> (MeasureExp MeterT N3) -> RLProxy (Cons "meter" (MeasureExp MeterT P1) (Cons "sec" (MeasureExp MeterT N1) Nil))
-t17 = insert
+-- t17 :: RLProxy (Cons "meter" (MeasureExp MeterT P1) (Cons "sec" (MeasureExp MeterT P2) Nil)) -> SProxy "sec" -> (MeasureExp SecT N3) -> RLProxy (Cons "meter" (MeasureExp MeterT P1) (Cons "sec" (MeasureExp MeterT N1) Nil))
+-- t17 = insert
+
+-- t18 :: RLProxy (Cons "meter" (MeasureExp SecT P1) Nil) -> SProxy "sec" -> MeasureExp SecT
 
 -- Test Add RowLists
 
@@ -111,14 +113,45 @@ t24 = addRowLists
 t25 :: RLProxy (Cons "meter" (MeasureExp MeterT P2) Nil) -> RLProxy (Cons "meter" (MeasureExp MeterT N3) Nil) -> RLProxy (Cons "meter" (MeasureExp MeterT N1) Nil)
 t25 = addRowLists
 
+t26 :: RLProxy (Cons "meter" (MeasureExp MeterT P1) Nil) -> RLProxy (Cons "sec" (MeasureExp SecT P1) Nil) -> RLProxy (Cons "sec" (MeasureExp SecT P1) (Cons "meter" (MeasureExp MeterT P1) Nil))
+t26 = addRowLists
+
+-- t27 :: RLProxy (Cons "sec" (MeasureExp MeterT P1) Nil) -> RLProxy (Cons "meter" (MeasureExp SecT P1) Nil) -> RLProxy (Cons "sec" (MeasureExp SecT P1) (Cons "meter" (MeasureExp MeterT P1) Nil))
+-- t27 = addRowLists
+
 -- Test Add Rows
 
-t31 :: RProxy (meter :: (MeasureExp MeterT P1)) -> RProxy (sec :: (MeasureExp SecT P1)) -> RProxy (sec :: (MeasureExp SecT P1), meter :: (MeasureExp MeterT P1))
-t31 = undefined
+t31 :: RProxy () -> RProxy () -> RProxy ()
+t31 = addRows
 
-t32 :: RProxy (meter :: (MeasureExp MeterT P1)) -> RProxy (meter :: (MeasureExp MeterT P1)) -> RProxy (sec :: (MeasureExp SecT P1), meter :: (MeasureExp MeterT P1))
-t32 = undefined
+t32 :: RProxy (meter :: MeasureExp MeterT P1) -> RProxy () -> RProxy (meter :: MeasureExp MeterT P1)
+t32 = addRows
 
+t33 :: RProxy (meter :: MeasureExp MeterT P1) -> RProxy (meter :: MeasureExp MeterT P2) -> RProxy (meter :: MeasureExp MeterT P3)
+t33 = addRows
+
+t34 :: RProxy (sec :: MeasureExp SecT P1) -> RProxy (meter :: MeasureExp MeterT P1) -> RProxy (meter :: MeasureExp MeterT P1, sec :: MeasureExp SecT P1)
+t34 = addRows
+
+-- -- fails!!
+-- t35 :: RProxy (meter :: MeasureExp MeterT P1) -> RProxy (sec :: MeasureExp SecT P1) -> RProxy (meter :: MeasureExp MeterT P1, sec :: MeasureExp SecT P1)
+-- t35 = addRows
+
+-- fails!!
+-- t35 :: RProxy (meter :: MeasureExp MeterT P1) -> RProxy (sec :: MeasureExp SecT P2) -> RProxy (meter :: MeasureExp MeterT P1, sec :: MeasureExp SecT P2)
+-- t35 = addRows
+
+-- t31 :: RProxy (meter :: (MeasureExp MeterT P1)) -> RProxy (sec :: (MeasureExp SecT P1)) -> RProxy (sec :: (MeasureExp SecT P1), meter :: (MeasureExp MeterT P1))
+-- t31 = addRows
+
+-- t32 :: RProxy (meter :: (MeasureExp MeterT P1)) -> RProxy (meter :: (MeasureExp MeterT P1)) -> RProxy (sec :: (MeasureExp SecT P1), meter :: (MeasureExp MeterT P1))
+-- t32 = addRows
+
+-- t33 :: RProxy (meter :: (MeasureExp MeterT P1)) -> RProxy (sec :: (MeasureExp SecT P1)) -> RProxy (meter :: (MeasureExp MeterT P1), sec :: (MeasureExp SecT P1))
+-- t33 = addRows
+
+unitLess :: Int : ()
+unitLess = Measured 1
 
 m :: Int : Meter P1 (Sec P2 ())
 m = Measured 1
@@ -126,12 +159,19 @@ m = Measured 1
 m2 :: Int : Meter N2 * Sec P1 * ()
 m2 = Measured 2
 
-
 t :: Measured Int
   ( meter :: MeasureExp MeterT (Neg (Succ Z))
   , sec :: MeasureExp SecT (Pos (Succ (Succ (Succ Z))))
   )
-t = m `mult` m2
+t = m ** m2
+
+
+distance :: Int : Meter P1 ()
+distance = (const 10) ** meter
+
+-- speed :: Int : Meter P1 * Sec P1 ()
+-- speed = meter ** sec
+
 
 main :: Effect Unit
 main = do

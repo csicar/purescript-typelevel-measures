@@ -1,9 +1,10 @@
 module Data.Type.Units where
 
 import Data.Type.Numbers
-import Prelude
+import Prelude (class Semiring, class Show, (<>), show, ($))
 import Type.Prelude
 
+import Prelude as Prelude
 import Prim.Row as Row
 import Prim.RowList (kind RowList, Cons, Nil)
 import Type.Data.RowList (RLProxy(..))
@@ -23,9 +24,9 @@ data MeasureExp (m :: Measure) (exp :: Int)
 
 class InsertAddRowList (list :: RowList) (sym :: Symbol) ty (result :: RowList) | list sym ty -> result
 
-instance insertAddSame ∷ (Sum exp exp2 sum) => InsertAddRowList (Cons sym (MeasureExp ty exp) tail) sym (MeasureExp ty2 exp2) (Cons sym (MeasureExp ty sum) tail)
+instance insertAddSame ∷ (Sum exp exp2 sum) => InsertAddRowList (Cons sym (MeasureExp ty exp) tail) sym (MeasureExp ty exp2) (Cons sym (MeasureExp ty sum) tail)
 else
-instance insertAddDifferenct ∷ (InsertAddRowList tail sym2 ty2 tail') => InsertAddRowList (Cons sym1 ty1 tail) sym2 ty2 (Cons sym1 ty1 tail')
+instance insertAddDifferent ∷ (InsertAddRowList tail sym2 ty2 tail') => InsertAddRowList (Cons sym1 ty1 tail) sym2 ty2 (Cons sym1 ty1 tail')
 
 instance insertNew :: InsertAddRowList Nil sym (MeasureExp m exp) (Cons sym (MeasureExp m exp) Nil)
 
@@ -37,7 +38,13 @@ class AddRowLists (a :: RowList) (b :: RowList) (sum :: RowList) | a b -> sum
 
 instance addRowListCons :: (InsertAddRowList other sym ty other', AddRowLists tail other' result) => AddRowLists (Cons sym ty tail) other result
 
-instance addRowListNil :: AddRowLists Nil other other
+-- RowListEq must be used in stead of just AddRowList Nil a a, since iferrence of a is not possible with constraints of class AddRowLists
+instance addRowListNil :: (RowListEq a b) => AddRowLists Nil a b
+
+
+class RowListEq (a :: RowList) (b :: RowList) | a -> b, b -> a
+
+instance rowListEq :: RowListEq a a
 
 addRowLists :: ∀a b sum. (AddRowLists a b sum) => RLProxy a -> RLProxy b -> RLProxy sum
 addRowLists a b = undefined
@@ -51,7 +58,12 @@ addRows a b = undefined
 
 
 mult :: ∀a b c v. AddRows a b c => Semiring v => Measured v a -> Measured v b -> Measured v c
-mult (Measured a) (Measured b) = Measured (a*b)
+mult (Measured a) (Measured b) = Measured (a `Prelude.mul` b)
+
+infixl 7 mult as **
+
+const :: ∀a. Semiring a => a -> a : ()
+const = Measured
 
 -- Syntactic Sugar
 
