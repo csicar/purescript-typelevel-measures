@@ -105,8 +105,8 @@ instance addPosZ :: Sum (Pos Z) (Pos b) (Pos b)
 instance addNegZ :: Sum (Neg Z) (Neg b) (Neg b)
 instance addNegPosZ :: Sum (Neg (Succ a)) (Pos Z) (Neg (Succ a))
 instance addPosNegZ :: Sum (Pos Z) (Neg (Succ b)) (Neg (Succ b))
-instance addZZ :: Sum (Neg Z) (Pos Z) (Pos Z)
-instance addZZ' :: Sum (Pos Z) (Neg Z) (Pos Z)
+instance minusZ :: Sum (Pos a) (Neg Z) (Pos a)
+instance minusZ' :: Sum (Neg Z) (Pos a) (Pos a)
 
 plus :: ∀a b c. Sum a b c => IProxy a -> IProxy b -> IProxy c
 plus _ _ = (undefined :: IProxy c)

@@ -22,36 +22,77 @@ data MeasureExp (m :: Measure) (exp :: Int)
 
 
 
-class InsertAddRowList (list :: RowList) (sym :: Symbol) ty (result :: RowList) | list sym ty -> result
+-- combines two sequential same symbols by adding their values
+class Combine (original :: RowList) (combined :: RowList) | original -> combined
 
-instance insertAddSame ∷ (Sum exp exp2 sum) => InsertAddRowList (Cons sym (MeasureExp ty exp) tail) sym (MeasureExp ty exp2) (Cons sym (MeasureExp ty sum) tail)
+
+instance combineSame ∷ (Sum exp1 exp2 exp3, Combine tail tail') => Combine (Cons sym (MeasureExp m exp1) (Cons sym (MeasureExp m exp2) tail)) (Cons sym (MeasureExp m exp3) tail')
 else
-instance insertAddDifferent ∷ (InsertAddRowList tail sym2 ty2 tail') => InsertAddRowList (Cons sym1 ty1 tail) sym2 ty2 (Cons sym1 ty1 tail')
+instance combineDifferent :: (Combine rest rest') => Combine (Cons sym1 (MeasureExp m1 exp1) rest) (Cons sym1 (MeasureExp m1 exp1) rest')
 
-instance insertNew :: InsertAddRowList Nil sym (MeasureExp m exp) (Cons sym (MeasureExp m exp) Nil)
-
-insert :: ∀a b c ty. (InsertAddRowList a b ty c) => RLProxy a -> SProxy b -> ty -> RLProxy c
-insert a b = undefined
+instance combineNil :: Combine Nil Nil
 
 
-class AddRowLists (a :: RowList) (b :: RowList) (sum :: RowList) | a b -> sum
-
-instance addRowListCons :: (InsertAddRowList other sym ty other', AddRowLists tail other' result) => AddRowLists (Cons sym ty tail) other result
-
--- RowListEq must be used in stead of just AddRowList Nil a a, since iferrence of a is not possible with constraints of class AddRowLists
-instance addRowListNil :: (RowListEq a b) => AddRowLists Nil a b
+combine :: ∀a b. (Combine a b) => RLProxy a -> RLProxy b
+combine = undefined
 
 
-class RowListEq (a :: RowList) (b :: RowList) | a -> b, b -> a
 
-instance rowListEq :: RowListEq a a
 
-addRowLists :: ∀a b sum. (AddRowLists a b sum) => RLProxy a -> RLProxy b -> RLProxy sum
-addRowLists a b = undefined
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- class InsertAddRowList (list :: RowList) (sym :: Symbol) ty (result :: RowList) | list sym ty -> result
+
+-- instance insertAddSame ∷ (Sum exp exp2 sum) => InsertAddRowList (Cons sym (MeasureExp ty exp) tail) sym (MeasureExp ty exp2) (Cons sym (MeasureExp ty sum) tail)
+-- else
+-- instance insertAddDifferent ∷ (InsertAddRowList tail sym2 ty2 tail') => InsertAddRowList (Cons sym1 ty1 tail) sym2 ty2 (Cons sym1 ty1 tail')
+
+-- instance insertNew :: InsertAddRowList Nil sym (MeasureExp m exp) (Cons sym (MeasureExp m exp) Nil)
+
+-- insert :: ∀a b c ty. (InsertAddRowList a b ty c) => RLProxy a -> SProxy b -> ty -> RLProxy c
+-- insert a b = undefined
+
+-- class AddRowLists (a :: RowList) (b :: RowList) (sum :: RowList) | a b -> sum
+
+-- instance addRowListCons :: (InsertAddRowList other sym ty other', AddRowLists tail other' result) => AddRowLists (Cons sym ty tail) other result
+
+-- -- RowListEq must be used in stead of just AddRowList Nil a a, since iferrence of a is not possible with constraints of class AddRowLists
+-- instance addRowListNil :: (RowListEq a b) => AddRowLists Nil a b
+
+
+-- class RowListEq (a :: RowList) (b :: RowList)
+
+-- instance rowListEq :: RowListEq a a
+
+-- addRowLists :: ∀a b sum. (AddRowLists a b sum) => RLProxy a -> RLProxy b -> RLProxy sum
+-- addRowLists a b = undefined
 
 class AddRows (a :: # Type) (b :: # Type) (sum :: #Type) | a b -> sum
 
-instance rowToRowList :: (AddRowLists ra rb rc, RowToList a ra, RowToList b rb, RowToList c rc, ListToRow ra a, ListToRow rb b, ListToRow rc c) => AddRows a b c
+instance addRowsCombine :: (Union a b sum, RowToList sum rsum, Combine rsum resultList, ListToRow resultList result) => AddRows a b result
+
+-- instance rowToRowList :: (AddRowLists ra rb rc, RowToList a ra, RowToList b rb, RowToList c rc, ListToRow ra a, ListToRow rb b, ListToRow rc c) => AddRows a b c
 
 addRows :: ∀a b sum. (AddRows a b sum) => RProxy a -> RProxy b -> RProxy sum
 addRows a b = undefined
