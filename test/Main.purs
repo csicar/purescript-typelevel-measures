@@ -194,7 +194,7 @@ speedOver10m :: Int : Meter P1 * Sec N1 ()
 speedOver10m = avgSpeed distance (liftV 5 ** sec)
 
 energyInBarOfChocolate :: Int : Joule ()
-energyInBarOfChocolate = liftV 123_3.4 ** joule
+energyInBarOfChocolate = liftV 2_300_000 ** joule
 
 forceOver5Meter :: Int : Newton ()
 forceOver5Meter = energyInBarOfChocolate // (liftV 5 ** meter)
