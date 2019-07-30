@@ -7,6 +7,7 @@ import Data.Array (index)
 import Data.Maybe (Maybe(..))
 import Prim.Row as Row
 import Prim.RowList (kind RowList, Cons, Nil)
+import Prim.Symbol as Symbol
 import Type.Data.RowList (RLProxy(..))
 
 foreign import undefined :: ∀a. a
@@ -25,17 +26,23 @@ foreign import data Neg :: Nat -> Int
 
 data IProxy (i :: Int)
 
-type P0 = Pos Z
-type P1 = Pos (Succ Z)
-type P2 = Pos (Succ (Succ Z))
-type P3 = Pos (Succ (Succ (Succ Z)))
-type P4 = Pos (Succ (Succ (Succ (Succ Z))))
-type P5 = Pos (Succ (Succ (Succ (Succ (Succ Z)))))
+type P0  = Pos Z
+type P1  = Pos (Succ Z)
+type P2  = Pos (Succ (Succ Z))
+type P3  = Pos (Succ (Succ (Succ Z)))
+type P4  = Pos (Succ (Succ (Succ (Succ Z))))
+type P5  = Pos (Succ (Succ (Succ (Succ (Succ Z)))))
+type P6  = Pos (Succ (Succ (Succ (Succ (Succ (Succ Z))))))
+type P7  = Pos (Succ (Succ (Succ (Succ (Succ (Succ (Succ Z)))))))
+type P8  = Pos (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ Z))))))))
+type P9  = Pos (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ Z)))))))))
+type P10 = Pos (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ Z))))))))))
 
 type N0 = Neg Z
 type N1 = Neg (Succ Z)
 type N2 = Neg (Succ (Succ Z))
 type N3 = Neg (Succ (Succ (Succ Z)))
+type N4 = Neg (Succ (Succ (Succ (Succ Z))))
 
 unicodeExponents :: Array String
 unicodeExponents = ["⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹"]
@@ -108,6 +115,18 @@ instance addPosNegZ :: Sum (Pos Z) (Neg (Succ b)) (Neg (Succ b))
 instance minusZ :: Sum (Pos a) (Neg Z) (Pos a)
 instance minusZ' :: Sum (Neg Z) (Pos a) (Pos a)
 
+-- Inverse
+
+class Inverse (a :: Int) (b :: Int) | a -> b, b -> a
+
+instance inversePosZ :: Inverse (Pos Z) (Pos Z)
+else
+instance inversePosSucc :: Inverse (Pos a) (Neg a)
+else
+instance inverseNegZ ∷ Inverse (Neg Z) (Pos Z) 
+else
+instance inverseNegSucc :: Inverse (Neg a) (Pos a)
+
 plus :: ∀a b c. Sum a b c => IProxy a -> IProxy b -> IProxy c
 plus _ _ = (undefined :: IProxy c)
 
@@ -119,3 +138,54 @@ one = undefined
 
 minusOne :: IProxy N1
 minusOne = undefined
+
+
+-- Product
+class Product (a :: Int) (b :: Int) (c :: Int) | a b -> c
+
+instance productPosNeg :: Product (Pos a) (Pos b) (Pos c) => Product (Neg a) (Pos b) (Neg c)
+
+instance productNegNeg :: Product (Pos a) (Pos b) (Pos c) => Product (Neg a) (Neg b) (Pos c)
+
+instance productZ :: Product (Pos Z) a (Pos Z)
+else
+instance product1 :: Product (Pos (Succ Z)) a a
+else
+instance productNegPos :: Product (Pos a) (Pos b) (Pos c) => Product (Pos a) (Neg b) (Neg c)
+
+else
+-- (1 + a) * b = b + (a * b)
+instance productSucc :: (Product (Pos a) b ab, Sum ab b result) => Product (Pos (Succ a)) b result
+
+prod :: ∀a b c. Product a b c => IProxy a -> IProxy b -> IProxy c
+prod _ _ = (undefined :: IProxy c)
+
+-- Parsing
+class ParseNumber (sym :: Symbol) (int :: Int) | int -> sym, sym -> int
+
+
+instance parseLit0 :: ParseNumber "0" (Pos Z)
+else
+instance parseLit1 :: ParseNumber "1" (Pos (Succ Z))
+else
+instance parseLit2 :: ParseNumber "2" (Pos (Succ (Succ Z)))
+else
+instance parseLit3 :: ParseNumber "3" (Pos (Succ (Succ (Succ Z))))
+else
+instance parseLit4 :: ParseNumber "4" (Pos (Succ (Succ (Succ (Succ Z)))))
+else
+instance parseLit5 :: ParseNumber "5" (Pos (Succ (Succ (Succ (Succ (Succ Z))))))
+else
+instance parseLit6 :: ParseNumber "6" (Pos (Succ (Succ (Succ (Succ (Succ (Succ Z)))))))
+else
+instance parseLit7 :: ParseNumber "7" (Pos (Succ (Succ (Succ (Succ (Succ (Succ (Succ Z))))))))
+else
+instance parseLit8 :: ParseNumber "8" (Pos (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ Z)))))))))
+else
+instance parseLit9 :: ParseNumber "9" (Pos (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ Z))))))))))
+else
+instance parseCons :: (ParseNumber head msd, Symbol.Cons head tail sym, Product msd P10 high, ParseNumber tail lower, Sum high lower res) => ParseNumber sym res
+
+
+parseInt :: ∀a sym. ParseNumber sym a => SProxy sym -> IProxy a
+parseInt _ = undefined

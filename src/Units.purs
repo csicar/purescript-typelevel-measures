@@ -1,9 +1,9 @@
 module Data.Type.Units where
 
 import Data.Type.Numbers
-import Prelude (class Semiring, class Show, (<>), show, ($))
 import Type.Prelude
 
+import Prelude (class EuclideanRing, class Semiring, class Show, show, ($), (<>), (/))
 import Prelude as Prelude
 import Prim.Row as Row
 import Prim.RowList (kind RowList, Cons, Nil)
@@ -38,70 +38,36 @@ combine = undefined
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
--- class InsertAddRowList (list :: RowList) (sym :: Symbol) ty (result :: RowList) | list sym ty -> result
-
--- instance insertAddSame ∷ (Sum exp exp2 sum) => InsertAddRowList (Cons sym (MeasureExp ty exp) tail) sym (MeasureExp ty exp2) (Cons sym (MeasureExp ty sum) tail)
--- else
--- instance insertAddDifferent ∷ (InsertAddRowList tail sym2 ty2 tail') => InsertAddRowList (Cons sym1 ty1 tail) sym2 ty2 (Cons sym1 ty1 tail')
-
--- instance insertNew :: InsertAddRowList Nil sym (MeasureExp m exp) (Cons sym (MeasureExp m exp) Nil)
-
--- insert :: ∀a b c ty. (InsertAddRowList a b ty c) => RLProxy a -> SProxy b -> ty -> RLProxy c
--- insert a b = undefined
-
--- class AddRowLists (a :: RowList) (b :: RowList) (sum :: RowList) | a b -> sum
-
--- instance addRowListCons :: (InsertAddRowList other sym ty other', AddRowLists tail other' result) => AddRowLists (Cons sym ty tail) other result
-
--- -- RowListEq must be used in stead of just AddRowList Nil a a, since iferrence of a is not possible with constraints of class AddRowLists
--- instance addRowListNil :: (RowListEq a b) => AddRowLists Nil a b
-
-
--- class RowListEq (a :: RowList) (b :: RowList)
-
--- instance rowListEq :: RowListEq a a
-
--- addRowLists :: ∀a b sum. (AddRowLists a b sum) => RLProxy a -> RLProxy b -> RLProxy sum
--- addRowLists a b = undefined
-
 class AddRows (a :: # Type) (b :: # Type) (sum :: #Type) | a b -> sum
 
 instance addRowsCombine :: (Union a b sum, RowToList sum rsum, Combine rsum resultList, ListToRow resultList result) => AddRows a b result
-
--- instance rowToRowList :: (AddRowLists ra rb rc, RowToList a ra, RowToList b rb, RowToList c rc, ListToRow ra a, ListToRow rb b, ListToRow rc c) => AddRows a b c
 
 addRows :: ∀a b sum. (AddRows a b sum) => RProxy a -> RProxy b -> RProxy sum
 addRows a b = undefined
 
 
+class InverseRowList (original :: RowList) (inverted :: RowList) | original -> inverted, inverted -> original
+
+instance inverseNil ∷ InverseRowList Nil Nil
+
+instance inverseCons :: (InverseRowList tail inverseTail, Inverse ty inverseTy) => InverseRowList (Cons sym (MeasureExp m ty) tail) (Cons sym (MeasureExp m inverseTy) inverseTail)
+
+
+class InverseRow (original :: # Type) (inverted :: # Type) | inverted -> original
+
+instance inverseRowList ∷ (RowToList original originalList, InverseRowList originalList resultList, ListToRow resultList result) =>  InverseRow original result
+
+-- Methods
+
 mult :: ∀a b c v. AddRows a b c => Semiring v => Measured v a -> Measured v b -> Measured v c
 mult (Measured a) (Measured b) = Measured (a `Prelude.mul` b)
 
 infixl 7 mult as **
+
+divide :: ∀a b c v ib. InverseRow b ib => AddRows a ib c => EuclideanRing v => Measured v a -> Measured v b -> Measured v c
+divide (Measured a) (Measured b) = Measured (a / b)
+
+infixl 7 divide as //
 
 const :: ∀a. Semiring a => a -> a : ()
 const = Measured

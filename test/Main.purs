@@ -4,7 +4,7 @@ import Data.Type.Units
 import Data.Type.Units.SI
 
 import Data.Symbol (SProxy(..))
-import Data.Type.Numbers (IProxy, N1, N2, N3, Neg, P0, P1, P2, P3, P4, P5, Pos, Succ, Z, minusOne, one, plus, undefined)
+import Data.Type.Numbers (IProxy, N1, N2, N3, Neg, P0, P1, P2, P3, P4, P5, P8, Pos, Succ, Z, P10, minusOne, one, parseInt, plus, prod, undefined)
 import Effect (Effect)
 import Effect.Console (log)
 import Prelude (Unit, discard, show)
@@ -72,58 +72,30 @@ t7' = one `plus` minusOne
 t8 :: IProxy P1
 t8 = one `plus` minusZero
 
---Test Insert
+t9 :: IProxy P4
+t9 = (one `plus` one) `prod` (one `plus` one)
 
+t10 :: IProxy P8
+t10 = t9 `prod` (one `plus` one)
 
--- t11 :: RLProxy Nil -> SProxy "meter" -> MeasureExp MeterT P1 -> RLProxy (Cons "meter" (MeasureExp MeterT P1) Nil)
--- t11 = insert
+t11 :: IProxy (Pos (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ Z)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+t11 = t10 `prod` t10
 
--- t12 :: 
---   RLProxy (Cons "meter" (MeasureExp MeterT P1) Nil) 
---   -> SProxy "meter"
---   -> MeasureExp MeterT P1
---   -> RLProxy (Cons "meter" (MeasureExp MeterT P2) Nil)
--- t12 = insert
+t12 :: IProxy (Pos (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ (Succ Z)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+t12 = parseInt (undefined :: SProxy "64")
 
--- t13 :: RLProxy (Cons "meter" (MeasureExp MeterT P1) Nil) -> SProxy "meter" -> (MeasureExp MeterT P3) -> RLProxy (Cons "meter" (MeasureExp MeterT P4) Nil)
--- t13 = insert
+t13 :: IProxy P10
+t13 = parseInt (undefined :: SProxy "10")
 
--- t14 :: RLProxy (Cons "meter" (MeasureExp MeterT P2) Nil) -> SProxy "meter" -> (MeasureExp MeterT P3) -> RLProxy (Cons "meter" (MeasureExp MeterT P5) Nil)
--- t14 = insert
+t14 :: IProxy N2
+t14 = minusOne `prod` two
 
--- t15 :: RLProxy (Cons "meter" (MeasureExp MeterT P2) (Cons "sec" (MeasureExp MeterT P1) Nil)) -> SProxy "meter" -> (MeasureExp MeterT P3) -> RLProxy (Cons "meter" (MeasureExp MeterT P5) (Cons "sec" (MeasureExp MeterT P1) Nil))
--- t15 = insert
+t14' :: IProxy N2
+t14' = two `prod` minusOne
 
--- t16 :: RLProxy (Cons "meter" (MeasureExp MeterT P1) (Cons "sec" (MeasureExp SecT P2) Nil)) -> SProxy "sec" -> (MeasureExp SecT P2) -> RLProxy (Cons "meter" (MeasureExp MeterT P1) (Cons "sec" (MeasureExp SecT P4) Nil))
--- t16 = insert
+t15 :: IProxy P4
+t15 = minusTwo `prod` minusTwo
 
--- -- t17 :: RLProxy (Cons "meter" (MeasureExp MeterT P1) (Cons "sec" (MeasureExp MeterT P2) Nil)) -> SProxy "sec" -> (MeasureExp SecT N3) -> RLProxy (Cons "meter" (MeasureExp MeterT P1) (Cons "sec" (MeasureExp MeterT N1) Nil))
--- -- t17 = insert
-
--- -- t18 :: RLProxy (Cons "meter" (MeasureExp SecT P1) Nil) -> SProxy "sec" -> MeasureExp SecT
-
--- -- Test Add RowLists
-
--- t21 :: RLProxy (Cons "meter" (MeasureExp MeterT P1) Nil) -> RLProxy (Cons "sec" (MeasureExp SecT P1) Nil) -> RLProxy (Cons "sec" (MeasureExp SecT P1) (Cons "meter" (MeasureExp MeterT P1) Nil))
--- t21 = addRowLists
-
--- t22 :: RLProxy (Cons "meter" (MeasureExp MeterT P2) Nil) -> RLProxy (Cons "sec" (MeasureExp SecT P1) Nil) -> RLProxy (Cons "sec" (MeasureExp SecT P1) (Cons "meter" (MeasureExp MeterT P2) Nil))
--- t22 = addRowLists
-
--- t23 :: RLProxy (Cons "meter" (MeasureExp MeterT P2) Nil) -> RLProxy (Cons "sec" (MeasureExp SecT P0) Nil) -> RLProxy (Cons "sec" (MeasureExp SecT P0) (Cons "meter" (MeasureExp MeterT P2) Nil))
--- t23 = addRowLists
-
--- t24 :: RLProxy (Cons "meter" (MeasureExp MeterT P2) Nil) -> RLProxy (Cons "meter" (MeasureExp MeterT P2) Nil) -> RLProxy (Cons "meter" (MeasureExp MeterT P4) Nil)
--- t24 = addRowLists
-
--- t25 :: RLProxy (Cons "meter" (MeasureExp MeterT P2) Nil) -> RLProxy (Cons "meter" (MeasureExp MeterT N3) Nil) -> RLProxy (Cons "meter" (MeasureExp MeterT N1) Nil)
--- t25 = addRowLists
-
--- t26 :: RLProxy (Cons "meter" (MeasureExp MeterT P1) Nil) -> RLProxy (Cons "sec" (MeasureExp SecT P1) Nil) -> RLProxy (Cons "sec" (MeasureExp SecT P1) (Cons "meter" (MeasureExp MeterT P1) Nil))
--- t26 = addRowLists
-
--- -- t27 :: RLProxy (Cons "sec" (MeasureExp MeterT P1) Nil) -> RLProxy (Cons "meter" (MeasureExp SecT P1) Nil) -> RLProxy (Cons "sec" (MeasureExp SecT P1) (Cons "meter" (MeasureExp MeterT P1) Nil))
--- -- t27 = addRowLists
 
 -- Test Add Rows
 
@@ -187,11 +159,10 @@ tt1 :: Measured Int
   )
 tt1 = m3 ** m4
 
-
 t :: Measured Int
-                                       ( meter :: MeasureExp MeterT (Neg (Succ Z))
-                                       , sec :: MeasureExp SecT (Pos (Succ Z))
-                                       )
+  ( meter :: MeasureExp MeterT (Neg (Succ Z))
+  , sec :: MeasureExp SecT (Pos (Succ Z))
+  )
 t = m ** m2
 
 
@@ -206,8 +177,11 @@ tt2 = m4 ** m5
 distance :: Int : Meter P1 ()
 distance = (const 10) ** meter
 
-speed :: Int : Meter P1 * Sec P1 ()
-speed = meter ** sec
+s :: Int : Sec N1()
+s = Measured 1
+
+speed :: Int : Meter P1 * Sec N1 ()
+speed = meter // sec
 
 
 main :: Effect Unit
