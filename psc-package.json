@@ -7,6 +7,7 @@
     "effect",
     "prelude",
     "psci-support",
-    "typelevel-prelude"
+    "typelevel-prelude",
+    "arrays"
   ]
 }

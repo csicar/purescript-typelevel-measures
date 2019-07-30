@@ -1,14 +1,18 @@
 module Test.Main where
 
 import Data.Type.Units
+import Data.Type.Units.SI
 
 import Data.Symbol (SProxy(..))
+import Data.Type.Numbers (IProxy, Pos, Neg, Succ, Z, minusOne, one, plus, P0, P1, P2, P3, P4, P5, N1, N2, N3)
 import Effect (Effect)
 import Effect.Console (log)
-import Prelude (Unit)
+import Prelude (Unit, discard, show)
 import Prim.RowList (kind RowList, Cons, Nil)
 import Type.Data.Row (RProxy(..))
 import Type.Data.RowList (RLProxy(..))
+import Type.Row (type (+))
+
 
 
 two :: IProxy (Pos (Succ (Succ Z)))
@@ -116,19 +120,21 @@ t32 :: RProxy (meter :: (MeasureExp MeterT P1)) -> RProxy (meter :: (MeasureExp 
 t32 = undefined
 
 
-m :: Measured Int (meter :: MeasureExp MeterT P1)
+m :: Int : Meter P1 (Sec P2 ())
 m = Measured 1
 
-m2 :: Measured Int (meter :: MeasureExp MeterT N2, sec :: MeasureExp SecT P1)
+m2 :: Int : Meter N2 * Sec P1 * ()
 m2 = Measured 2
 
 
 t :: Measured Int
   ( meter :: MeasureExp MeterT (Neg (Succ Z))
-  , sec :: MeasureExp SecT (Pos (Succ Z))
+  , sec :: MeasureExp SecT (Pos (Succ (Succ (Succ Z))))
   )
 t = m `mult` m2
 
 main :: Effect Unit
 main = do
+  log (show t)
+  log (show (Measured 12 :: Int : Meter P5 * Sec N2 ()))
   log "You should add some tests."
