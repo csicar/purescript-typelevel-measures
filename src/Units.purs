@@ -3,7 +3,7 @@ module Data.Type.Units where
 import Data.Type.Numbers
 import Type.Prelude
 
-import Prelude (class EuclideanRing, class Semiring, class Show, show, ($), (<>), (/))
+import Prelude (class Eq, class EuclideanRing, class Ord, class Ring, class Semiring, class Show, compare, eq, show, ($), (/), (<>))
 import Prelude as Prelude
 import Prim.Row as Row
 import Prim.RowList (kind RowList, Cons, Nil)
@@ -15,6 +15,12 @@ foreign import undefined :: ∀a. a
 
 
 data Measured v (u :: # Type) = Measured v
+
+instance eqMeasured :: (Eq v) => Eq (Measured v u) where
+  eq (Measured a) (Measured b) = eq a b
+
+instance ordMeasured :: (Ord v) => Ord (Measured v u) where
+  compare (Measured a) (Measured b) = compare a b
 
 foreign import kind Measure
 data MProxy (m :: Measure)
@@ -69,8 +75,24 @@ divide (Measured a) (Measured b) = Measured (a / b)
 
 infixl 7 divide as //
 
-const :: ∀a. Semiring a => a -> a : ()
-const = Measured
+liftV :: ∀a. Semiring a => a -> a : ()
+liftV = Measured
+
+add :: ∀a b c v. Semiring v => AddRows a b c => Measured v a -> Measured v b -> Measured v c
+add (Measured a) (Measured b) = Measured (a `Prelude.add` b)
+
+infixl 6 add as ++
+
+sub :: ∀a b c v. Ring v => AddRows a b c => Measured v a -> Measured v b -> Measured v c
+sub (Measured a) (Measured b) = Measured (a `Prelude.sub` b)
+
+infixl 6 sub as -|
+
+zeroV :: ∀v. Semiring v => Measured v ()
+zeroV = Measured Prelude.zero
+
+oneV :: ∀v. Semiring v => Measured v ()
+oneV = Measured Prelude.one
 
 -- Syntactic Sugar
 
