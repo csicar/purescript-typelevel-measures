@@ -6,9 +6,9 @@ Library for typelevel units of measure
 
 ### Features:
 
-- Automatic Simplification of Type-Terms
-- Clean Type-Syntax
-- Inferrence of the Unit of a Term
+- Automatic simplification of type-terms
+- Inference of types of units of measure
+- Extensible to new base units
 
 ### Example:
 
@@ -17,16 +17,16 @@ import Data.Type.Units
 import Data.Type.Units.SI
 import Data.Type.Numbers
 
-distance :: Int : Meter P1 ()
+distance :: Int : Meter' ()
 distance = liftV 10 ** meter
 
 > distance -- prints:
 10·m¹
 
-avgSpeed :: Int : Meter P1 () -> Int : Sec P1 () -> Int : Meter P1 * Sec N1 ()
+avgSpeed :: Int : Meter' () -> Int : Sec' () -> Int : Meter' * Sec' * ()
 avgSpeed a b = a // b
 
-speedOver10m :: Int : Meter P1 * Sec N1 ()
+speedOver10m :: Int : Meter' * Sec N1 ()
 speedOver10m = avgSpeed distance (liftV 5 ** sec)
 
 > speedOver10m  -- prints:
@@ -53,4 +53,24 @@ Measured Int
   )
 
 
+```
+
+### Build
+
+```bash
+$ psc-package install
+$ pulp --psc-package build
+$ pulp --psc-package test
+```
+
+### Now it works
+
+The Units are encoded as a Row of BaseUnits (called `kind Measure`) with its exponent (`kind Int`).
+
+When multiplying two Units, the Rows are first sorted (using `ListToRow`) and then combined similar to this:
+
+```haskell
+
+combine (meter :: MeasureExp MeterT exp, meter :: MeasureExp MeterT exp2 | tail) = (meter :: MeasureExp MeterT (exp + exp2) | combine tail)
+combine () = ()
 ```

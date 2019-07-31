@@ -6,19 +6,10 @@ import Prelude
 
 import Data.Type.Numbers (N1, N2, N3, P1, P2, N4)
 
---Template
--- foreign import data KKT :: Measure
--- type KK exp r = (ll :: MeasureExp KKT exp | r)
-
--- ll :: ∀a. Semiring a => a : KK P1 ()
--- ll = Measured one
-
--- instance showKK :: ShowMeasure KKT where
---   showMeasure _ = "m"
-
 -- Meter
 foreign import data MeterT :: Measure
 type Meter exp r = (meter :: MeasureExp MeterT exp | r)
+type Meter' r = Meter P1 r
 
 meter :: ∀a. Semiring a => a : Meter P1 ()
 meter = Measured one
@@ -29,6 +20,7 @@ instance showMeter :: ShowMeasure MeterT where
 -- Kilogram
 foreign import data KgT :: Measure
 type Kg exp r = (kg :: MeasureExp KgT exp | r)
+type Kg' r = Kg P1 r
 
 kg :: ∀a. Semiring a => a : Kg P1 ()
 kg = Measured one
@@ -40,6 +32,7 @@ instance showkg :: ShowMeasure KgT where
 -- Second
 foreign import data SecT :: Measure
 type Sec exp r = (sec :: MeasureExp SecT exp | r)
+type Sec' r = Sec P1 r
 
 sec :: ∀a. Semiring a => a : Sec P1 ()
 sec = Measured one
@@ -60,6 +53,7 @@ instance showAmpere :: ShowMeasure AmpereT where
 -- Mole
 foreign import data MoleT :: Measure
 type Mole exp r = (mole :: MeasureExp MoleT exp | r)
+type Mole' r = Mole P1 r
 
 mole :: ∀a. Semiring a => a : Mole P1 ()
 mole = Measured one
@@ -70,6 +64,7 @@ instance showMole :: ShowMeasure MoleT where
 -- Kelvin
 foreign import data KelvinT :: Measure
 type Kelvin exp r = (kelvin :: MeasureExp KelvinT exp | r)
+type Kelvin' r = Kelvin P1 r
 
 kelvin :: ∀a. Semiring a => a : Kelvin P1 ()
 kelvin = Measured one
@@ -81,6 +76,7 @@ instance showKelvin :: ShowMeasure KelvinT where
 -- Candela
 foreign import data CandelaT :: Measure
 type Candela exp r = (candela :: MeasureExp CandelaT exp | r)
+type Candela' r = Candela P1 r
 
 candela :: ∀a. Semiring a => a : Candela P1 ()
 candela = Measured one
@@ -89,11 +85,6 @@ instance showCandela :: ShowMeasure CandelaT where
   showMeasure _ = "cd"
 
 -- Derived
-
--- type Velocity r = Meter P1 * Sec N1 * r
-
--- type Acceleration r = Meter P1 * Sec N2 * r
-
 
 type Newton r = Kg P1 * Meter P1 * Sec N2 * r
 
