@@ -1,14 +1,15 @@
 module Test.Main where
 
-import Type.Data.Units (type (*), type (:), MeasureExp, Measured(..), addRows, liftV, (**), (//))
-import Type.Data.Units.SI (Joule, Kg, Meter, MeterT, Newton, Sec, SecT, joule, meter, sec)
+import Prelude
 
 import Effect (Effect)
-import Effect.Console (log)
-import Prelude
+import Effect.Console (log, logShow)
 import Type.Data.Peano.Int (N1, N2, N3, Neg, P1, P2, P3, P5, Pos)
 import Type.Data.Peano.Nat (kind Nat, Succ, Z)
 import Type.Data.Row (RProxy)
+import Type.Data.Units (class ShowMeasure, type (*), type (:), MeasureExp, Measured, addRows, liftV, (**), (//), kind Measure)
+import Type.Data.Units.SI (Joule, Kg, Meter, MeterT, Newton, Sec, SecT, Meter', joule, meter, sec)
+import Unsafe.Coerce (unsafeCoerce)
 
 
 
@@ -46,10 +47,10 @@ t40 :: RProxy (sec :: (MeasureExp SecT P1)) -> RProxy (meter :: (MeasureExp Mete
 t40 = addRows
 
 unitLess :: Int : ()
-unitLess = Measured 1
+unitLess = liftV 1
 
 m :: Int : Sec P2 * Meter P1 ()
-m = Measured 1
+m = liftV 1 ** sec ** sec ** meter
 
 t0 :: Measured Int
   ( meter :: MeasureExp MeterT (Pos (Succ Z))
@@ -58,17 +59,17 @@ t0 :: Measured Int
 t0 = m ** unitLess
 
 m2 :: Int : Sec N1 * Meter N2 ()
-m2 = Measured 2
+m2 = liftV 2 // sec // meter // meter
 
 
 m3 :: Int : Sec P1 ()
-m3 = Measured 2
+m3 = liftV 2 ** sec
 
 m4 :: Int : Sec P2 ()
-m4 = Measured 4
+m4 = liftV 4 ** sec ** sec
 
 m5 :: Int : Meter P1 * Sec P1 ()
-m5 = Measured 5
+m5 = liftV 5 ** meter ** sec
 
 tt1 :: Measured Int
   ( sec :: MeasureExp SecT (Pos (Succ (Succ (Succ Z))))
@@ -91,8 +92,8 @@ tt2 = m4 ** m5
 distance :: Int : Meter P1 ()
 distance = liftV 10 ** meter
 
-s :: Int : Sec N1()
-s = Measured 1
+s :: Int : Sec N1 ()
+s = liftV 1 // sec
 
 speed :: Int : Meter P1 * Sec N1 ()
 speed = meter // sec
@@ -114,9 +115,26 @@ typeInferenceTest :: Int : Kg P1 * Meter P2 * Sec N3 * ()
 typeInferenceTest = forceOver5Meter ** liftV 5 ** meter // sec
 
 
+-- Test custom Measure
+foreign import data MyUnitOfMeasureT :: Measure
+
+type MyUnitOfMeasure exp r = (myUnit :: MeasureExp MyUnitOfMeasureT exp | r)
+type MyUnitOfMeasure' r = MyUnitOfMeasure P1 r
+
+myUnit :: ∀a. Semiring a => a : MyUnitOfMeasure P1 ()
+myUnit = unsafeCoerce $ (liftV one :: a : ())
+
+instance showMeter :: ShowMeasure MyUnitOfMeasureT where
+  showMeasure _ = "μU" 
+
+valOfMyUnit :: Int : MyUnitOfMeasure' * Meter' ()
+valOfMyUnit = liftV 2 ** myUnit ** meter
+
 main :: Effect Unit
 main = do
-  log (show t)
-  log (show (Measured 12 :: Int : Meter P5 * Sec N2 ()))
-  log (show (forceOver5Meter))
+  logShow valOfMyUnit
+  logShow unitLess
+  logShow ((unsafeCoerce $ liftV 12) :: Int : Meter P5 * Sec N2 ())
+  logShow (forceOver5Meter)
+  logShow energyInBarOfChocolate
   log "Done"

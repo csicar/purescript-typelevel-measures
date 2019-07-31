@@ -1,8 +1,9 @@
 module Type.Data.Units.SI where
 
 import Prelude
-import Type.Data.Units (class ShowMeasure, type (*), type (:), MeasureExp, Measured(..), kind Measure)
 import Type.Data.Peano.Int (N1, N2, N3, P1, P2, N4)
+import Type.Data.Units (class ShowMeasure, type (*), type (:), MeasureExp, liftV, kind Measure)
+import Unsafe.Coerce (unsafeCoerce)
 
 -- Meter
 foreign import data MeterT :: Measure
@@ -14,7 +15,7 @@ type Meter' r
   = Meter P1 r
 
 meter :: ∀ a. Semiring a => a : Meter P1 ()
-meter = Measured one
+meter = unsafeCoerce $ (liftV one :: a : ())
 
 instance showMeter :: ShowMeasure MeterT where
   showMeasure _ = "m"
@@ -29,7 +30,7 @@ type Kg' r
   = Kg P1 r
 
 kg :: ∀ a. Semiring a => a : Kg P1 ()
-kg = Measured one
+kg = unsafeCoerce $ (liftV one :: a : ())
 
 instance showkg :: ShowMeasure KgT where
   showMeasure _ = "kg"
@@ -44,7 +45,7 @@ type Sec' r
   = Sec P1 r
 
 sec :: ∀ a. Semiring a => a : Sec P1 ()
-sec = Measured one
+sec = unsafeCoerce $ (liftV one :: a : ())
 
 instance showSec :: ShowMeasure SecT where
   showMeasure _ = "s"
@@ -56,7 +57,7 @@ type Ampere exp r
   = ( ampere :: MeasureExp AmpereT exp | r )
 
 ampere :: ∀ a. Semiring a => a : Ampere P1 ()
-ampere = Measured one
+ampere = unsafeCoerce $ (liftV one :: a : ())
 
 instance showAmpere :: ShowMeasure AmpereT where
   showMeasure _ = "A"
@@ -71,7 +72,7 @@ type Mole' r
   = Mole P1 r
 
 mole :: ∀ a. Semiring a => a : Mole P1 ()
-mole = Measured one
+mole = unsafeCoerce $ (liftV one :: a : ())
 
 instance showMole :: ShowMeasure MoleT where
   showMeasure _ = "mol"
@@ -86,7 +87,7 @@ type Kelvin' r
   = Kelvin P1 r
 
 kelvin :: ∀ a. Semiring a => a : Kelvin P1 ()
-kelvin = Measured one
+kelvin = unsafeCoerce $ (liftV one :: a : ())
 
 instance showKelvin :: ShowMeasure KelvinT where
   showMeasure _ = "K"
@@ -101,7 +102,7 @@ type Candela' r
   = Candela P1 r
 
 candela :: ∀ a. Semiring a => a : Candela P1 ()
-candela = Measured one
+candela = unsafeCoerce $ (liftV one :: a : ())
 
 instance showCandela :: ShowMeasure CandelaT where
   showMeasure _ = "cd"
@@ -111,52 +112,52 @@ type Newton r
   = Kg P1 * Meter P1 * Sec N2 * r
 
 newton :: ∀ a. Semiring a => a : Newton ()
-newton = Measured one
+newton = unsafeCoerce $ (liftV one :: a : ())
 
 type Hertz r
   = Sec N1 * r
 
 hertz :: ∀ a. Semiring a => a : Hertz ()
-hertz = Measured one
+hertz = unsafeCoerce $ (liftV one :: a : ())
 
 type Pascal r
   = Kg P1 * Meter N1 * Sec N2 * r
 
 pascal :: ∀ a. Semiring a => a : Pascal ()
-pascal = Measured one
+pascal = unsafeCoerce $ (liftV one :: a : ())
 
 type Joule r
   = Kg P1 * Meter P2 * Sec N2 * r
 
 joule :: ∀ a. Semiring a => a : Joule ()
-joule = Measured one
+joule = unsafeCoerce $ (liftV one :: a : ())
 
 type Watt r
   = Kg P1 * Meter P2 * Sec N3 * r
 
 watt :: ∀ a. Semiring a => a : Watt ()
-watt = Measured one
+watt = unsafeCoerce $ (liftV one :: a : ())
 
 type Coulomb r
   = Ampere P1 * Sec P1 * r
 
 coulomb :: ∀ a. Semiring a => a : Coulomb ()
-coulomb = Measured one
+coulomb = unsafeCoerce $ (liftV one :: a : ())
 
 type Volt r
   = Kg P1 * Meter P2 * Ampere N1 * Sec N3 * r
 
 volt :: ∀ a. Semiring a => a : Volt ()
-volt = Measured one
+volt = unsafeCoerce $ (liftV one :: a : ())
 
 type Farad r
   = Ampere P2 * Sec N4 * Kg N2 * Meter N2 * r
 
 farad :: ∀ a. Semiring a => a : Farad ()
-farad = Measured one
+farad = unsafeCoerce $ (liftV one :: a : ())
 
 type Ohm r
   = Kg P1 * Meter P2 * Sec N3 * Ampere N2 * r
 
 ohm :: ∀ a. Semiring a => a : Ohm ()
-ohm = Measured one
+ohm = unsafeCoerce $ (liftV one :: a : ())

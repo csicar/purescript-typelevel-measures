@@ -1,9 +1,9 @@
-module Type.Data.Units where
+module Type.Data.Units (Measured, kind Measure, MProxy, MeasureExp(..), class Combine, combine, class AddRows, addRows, class InverseRow, class InverseRowList, mult, (**), divide, (//), liftV, add, (++), sub, (-*), type (*), type (:), class ShowMeasure, showMeasure, ShowRow) where
 
 import Prelude
-import Prelude as Prelude
 import Data.Array (index)
 import Data.Maybe (Maybe(..))
+import Prelude as Prelude
 import Prim.RowList (kind RowList, Cons, Nil)
 import Type.Data.Peano.Int (class Inverse, class IsInt, class SumInt, IProxy, reflectInt, kind Int)
 import Type.Prelude (class ListToRow, class RowToList, class Union, RLProxy, RProxy)
@@ -78,13 +78,13 @@ infixl 6 add as ++
 sub :: ∀ a b c v. Ring v => AddRows a b c => Measured v a -> Measured v b -> Measured v c
 sub (Measured a) (Measured b) = Measured (a `Prelude.sub` b)
 
-infixl 6 sub as -|
+infixl 6 sub as -*
 
 zeroV :: ∀ v. Semiring v => Measured v ()
-zeroV = Measured Prelude.zero
+zeroV = liftV Prelude.zero
 
 oneV :: ∀ v. Semiring v => Measured v ()
-oneV = Measured Prelude.one
+oneV = liftV Prelude.one
 
 -- Syntactic Sugar
 infixr 4 type RowApply as *
@@ -94,11 +94,6 @@ infix 3 type Measured as :
 -- Show
 class ShowMeasure (m :: Measure) where
   showMeasure :: MProxy m -> String
-
-data ShowRow (r :: RowList)
-
-instance showRowNil :: Show (ShowRow Nil) where
-  show _ = ""
 
 unicodeExponents :: Array String
 unicodeExponents = [ "⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹" ]
@@ -117,10 +112,19 @@ constructPosExp x = case (index unicodeExponents x) of
   Nothing -> constructPosExp (x `div` 10) <> constructPosExp (x `mod` 10)
   Just exp -> exp
 
+data ShowRow (r :: RowList)
+
+instance showRowNil :: Show (ShowRow Nil) where
+  show _ = ""
+
 instance showRowCons ::
   (ShowMeasure ty, Show (ShowRow tail), IsInt exp) =>
   Show (ShowRow (Cons sym (MeasureExp ty exp) tail)) where
   show _ = showMeasure (undefined :: MProxy ty) <> (constructExp $ reflectInt (undefined :: IProxy exp)) <> (show (undefined :: ShowRow tail))
 
 instance showMeasured :: (Show v, RowToList r rl, Show (ShowRow rl)) => Show (Measured v r) where
-  show (Measured v) = show v <> "·" <> show (undefined :: ShowRow rl)
+  show (Measured v) = show v <> appendix
+    where
+    showUnit = show (undefined :: ShowRow rl)
+
+    appendix = if showUnit == "" then "" else "·" <> showUnit
