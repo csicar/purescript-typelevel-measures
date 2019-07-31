@@ -55,6 +55,16 @@ Measured Int
 
 ```
 
+### Installation
+
+```bash
+bower install purescript-typelevel-measures
+```
+
+### Documentation
+
+Module documentation is [published on Pursuit](https://pursuit.purescript.org/packages/purescript-typelevel-measures/).
+
 ### Build
 
 ```bash

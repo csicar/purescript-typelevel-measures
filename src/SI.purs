@@ -1,4 +1,4 @@
-module Data.Type.Units.SI where
+module Type.Data.Units.SI where
 
 
 import Data.Type.Units

@@ -1,17 +1,17 @@
-module Data.Type.Units where
+module Type.Data.Units where
 
-import Data.Type.Numbers
-import Type.Prelude
+import Data.Type.Numbers (class IntToValue, class Inverse, class Sum, IProxy, constructExp, intToValue, kind Int)
+import Type.Prelude (class ListToRow, class RowToList, class Union, RLProxy, RProxy)
 
-import Prelude (class Eq, class EuclideanRing, class Ord, class Ring, class Semiring, class Show, compare, eq, show, ($), (/), (<>))
+import Prelude (class Eq, class EuclideanRing, class Ord, class Ring, class Semiring, class Show, compare, eq, show, unit, ($), (/), (<>))
 import Prelude as Prelude
-import Prim.Row as Row
 import Prim.RowList (kind RowList, Cons, Nil)
-import Type.Data.RowList (RLProxy(..))
 import Type.Row (RowApply)
+import Unsafe.Coerce (unsafeCoerce)
 
 
-foreign import undefined :: ∀a. a
+undefined :: ∀a. a
+undefined = unsafeCoerce unit
 
 
 data Measured v (u :: # Type) = Measured v
