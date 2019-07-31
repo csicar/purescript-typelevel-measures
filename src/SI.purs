@@ -11,6 +11,9 @@ foreign import data MeterT :: Measure
 type Meter exp r
   = ( meter :: MeasureExp MeterT exp | r )
 
+-- | Meter with default exponent 1
+-- |
+-- | `Sec P2 * Meter' * Kg () ≡ Sec P2 * Meter P1 * Kg ()`
 type Meter' r
   = Meter P1 r
 
