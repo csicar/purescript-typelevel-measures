@@ -1,11 +1,13 @@
 module Type.Data.Units where
 
-import Data.Type.Numbers (class IntToValue, class Inverse, class Sum, IProxy, constructExp, intToValue, kind Int)
-import Type.Prelude (class ListToRow, class RowToList, class Union, RLProxy, RProxy)
-
-import Prelude (class Eq, class EuclideanRing, class Ord, class Ring, class Semiring, class Show, compare, eq, show, unit, ($), (/), (<>))
+import Prelude
 import Prelude as Prelude
+
+import Data.Array (index)
+import Data.Maybe (Maybe(..))
 import Prim.RowList (kind RowList, Cons, Nil)
+import Type.Data.Peano.Int (class Inverse, class IsInt, class SumInt, IProxy, reflectInt, kind Int)
+import Type.Prelude (class ListToRow, class RowToList, class Union, RLProxy, RProxy)
 import Type.Row (RowApply)
 import Unsafe.Coerce (unsafeCoerce)
 
@@ -32,7 +34,7 @@ data MeasureExp (m :: Measure) (exp :: Int)
 class Combine (original :: RowList) (combined :: RowList) | original -> combined
 
 
-instance combineSame ∷ (Sum exp1 exp2 exp3, Combine tail tail') => Combine (Cons sym (MeasureExp m exp1) (Cons sym (MeasureExp m exp2) tail)) (Cons sym (MeasureExp m exp3) tail')
+instance combineSame ∷ (SumInt exp1 exp2 exp3, Combine tail tail') => Combine (Cons sym (MeasureExp m exp1) (Cons sym (MeasureExp m exp2) tail)) (Cons sym (MeasureExp m exp3) tail')
 else
 instance combineDifferent :: (Combine rest rest') => Combine (Cons sym1 (MeasureExp m1 exp1) rest) (Cons sym1 (MeasureExp m1 exp1) rest')
 
@@ -109,9 +111,24 @@ data ShowRow (r :: RowList)
 instance showRowNil :: Show (ShowRow Nil) where
   show _ = ""
 
-instance showRowCons :: (ShowMeasure ty, Show (ShowRow tail), IntToValue exp) 
+unicodeExponents :: Array String
+unicodeExponents = ["⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹"]
+
+negExp :: String
+negExp = "⁻"
+
+constructExp :: Int -> String
+constructExp x | x >= 0 = constructPosExp x
+constructExp x = negExp <> (constructPosExp (-x))
+
+constructPosExp :: Int -> String
+constructPosExp x = case (index unicodeExponents x) of
+   Nothing -> constructPosExp (x `div` 10) <> constructPosExp (x `mod` 10)
+   Just exp -> exp
+
+instance showRowCons :: (ShowMeasure ty, Show (ShowRow tail), IsInt exp) 
   => Show (ShowRow (Cons sym (MeasureExp ty exp) tail)) where
-  show _ = showMeasure (undefined :: MProxy ty) <> (constructExp $ intToValue (undefined :: IProxy exp)) <> (show (undefined :: ShowRow tail))
+  show _ = showMeasure (undefined :: MProxy ty) <> (constructExp $ reflectInt (undefined :: IProxy exp)) <> (show (undefined :: ShowRow tail))
 
 instance showMeasured :: (Show v, RowToList r rl, Show (ShowRow rl)) => Show (Measured v r) where
    show (Measured v) = show v <> "·" <> show (undefined :: ShowRow rl)

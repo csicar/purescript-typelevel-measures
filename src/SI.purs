@@ -1,10 +1,10 @@
 module Type.Data.Units.SI where
 
 
-import Data.Type.Units
 import Prelude
 
-import Data.Type.Numbers (N1, N2, N3, P1, P2, N4)
+import Type.Data.Units (class ShowMeasure, type (*), type (:), MeasureExp, Measured(..), kind Measure)
+import Type.Data.Peano.Int (N1, N2, N3, P1, P2, N4)
 
 -- Meter
 foreign import data MeterT :: Measure

@@ -16,7 +16,8 @@
 		"purescript-typelevel-prelude": "^5.0.0",
 		"purescript-console": "^4.2.0",
 		"purescript-effect": "^2.0.1",
-		"purescript-arrays": ">2.0.0"
+		"purescript-arrays": ">2.0.0",
+		"purescript-typelevel-peano": "^0.1.0"
 	},
 	"devDependencies": {
 		"purescript-psci-support": "^4.0.0"

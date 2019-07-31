@@ -1,17 +1,14 @@
 module Test.Main where
 
-import Data.Type.Units
-import Data.Type.Units.SI
+import Type.Data.Units (type (*), type (:), MeasureExp, Measured(..), addRows, liftV, (**), (//))
+import Type.Data.Units.SI (Joule, Kg, Meter, MeterT, Newton, Sec, SecT, joule, meter, sec)
 
-import Data.Symbol (SProxy(..))
-import Data.Type.Numbers (IProxy, N1, N2, N3, Neg, P0, P1, P10, P2, P3, P4, P5, P8, Pos, Succ, Z, N4, minusOne, one, parseInt, plus, prod, undefined)
 import Effect (Effect)
 import Effect.Console (log)
-import Prelude (Unit, discard, show)
-import Prim.RowList (kind RowList, Cons, Nil)
-import Type.Data.Row (RProxy(..))
-import Type.Data.RowList (RLProxy(..))
-import Type.Row (type (+))
+import Prelude
+import Type.Data.Peano.Int (N1, N2, N3, Neg, P1, P2, P3, P5, Pos)
+import Type.Data.Peano.Nat (kind Nat, Succ, Z)
+import Type.Data.Row (RProxy)
 
 
 
