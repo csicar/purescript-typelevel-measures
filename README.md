@@ -2,7 +2,7 @@ Purescript Typelevel Units
 ==========================
 
 
-Library for typelevel units of measure
+Library for type-save units of measure.
 
 ### Features:
 
@@ -13,9 +13,9 @@ Library for typelevel units of measure
 ### Example:
 
 ```purescript
-import Data.Type.Units
-import Data.Type.Units.SI
-import Data.Type.Numbers
+import Type.Data.Units
+import Type.Data.Units.SI
+import Type.Data.Peano.Int
 
 distance :: Int : Meter' ()
 distance = liftV 10 ** meter
@@ -35,7 +35,7 @@ speedOver10m = avgSpeed distance (liftV 5 ** sec)
 energyInBarOfChocolate :: Int : Joule ()
 energyInBarOfChocolate = 2_300_000 ** joule
 
-> > energyInBarOfChocolate -- prints:
+> energyInBarOfChocolate -- prints:
 2300000·kg¹m²s⁻²
 
 forceOver5Meter :: Int : Newton ()
