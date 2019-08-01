@@ -88,13 +88,13 @@ liftV :: ∀ a. Semiring a => a -> a : ()
 liftV = Measured
 
 -- | add values with measures
-add :: ∀ a b c v. Semiring v => AddRows a b c => Measured v a -> Measured v b -> Measured v c
+add :: ∀ m v. Semiring v => Measured v m -> Measured v m -> Measured v m
 add (Measured a) (Measured b) = Measured (a `Prelude.add` b)
 
 infixl 6 add as ++
 
 -- | subtract values with measures
-sub :: ∀ a b c v. Ring v => AddRows a b c => Measured v a -> Measured v b -> Measured v c
+sub :: ∀ v m. Ring v => Measured v m -> Measured v m -> Measured v m
 sub (Measured a) (Measured b) = Measured (a `Prelude.sub` b)
 
 infixl 6 sub as -*
