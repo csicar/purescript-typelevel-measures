@@ -53,10 +53,10 @@ Measured Int
   )
 
 -- add Measured:
-addedDistances = liftV 1 ** meter ++ liftV 1 ** meter
+addedDistances = distance ++ liftV 2 ** meter
 
 > addedDistances -- prints:
-2·m²
+12·m¹
 
 ```
 
