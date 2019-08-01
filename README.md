@@ -23,7 +23,7 @@ distance = liftV 10 ** meter
 > distance -- prints:
 10·m¹
 
-avgSpeed :: Int : Meter' () -> Int : Sec' () -> Int : Meter' * Sec' * ()
+avgSpeed :: Int : Meter' () -> Int : Sec' () -> Int : Meter' * Sec N1 * ()
 avgSpeed a b = a // b
 
 speedOver10m :: Int : Meter' * Sec N1 ()
@@ -33,7 +33,7 @@ speedOver10m = avgSpeed distance (liftV 5 ** sec)
 2·m¹s⁻¹
 
 energyInBarOfChocolate :: Int : Joule ()
-energyInBarOfChocolate = 2_300_000 ** joule
+energyInBarOfChocolate = liftV 2_300_000 ** joule
 
 > energyInBarOfChocolate -- prints:
 2300000·kg¹m²s⁻²
@@ -52,6 +52,11 @@ Measured Int
   , sec :: MeasureExp SecT (Neg (Succ (Succ (Succ Z))))
   )
 
+-- add Measured:
+addedDistances = liftV 1 ** meter ++ liftV 1 ** meter
+
+> addedDistances -- prints:
+2·m²
 
 ```
 
