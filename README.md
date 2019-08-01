@@ -73,9 +73,9 @@ Module documentation is [published on Pursuit](https://pursuit.purescript.org/pa
 ### Build
 
 ```bash
-$ psc-package install
-$ pulp --psc-package build
-$ pulp --psc-package test
+$ bower install
+$ pulp build
+$ pulp test
 ```
 
 ### Now it works
