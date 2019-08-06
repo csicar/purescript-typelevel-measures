@@ -8,7 +8,7 @@ import Type.Data.Peano.Int (N1, N2, N3, Neg, P1, P2, P3, P5, Pos)
 import Type.Data.Peano.Nat (kind Nat, Succ, Z)
 import Type.Data.Row (RProxy)
 import Type.Data.Units (class ShowMeasure, type (*), type (:), MeasureExp, Measured, addRows, liftV, (**), (//), kind Measure)
-import Type.Data.Units.SI (Joule, Kg, Meter, MeterT, Newton, Sec, SecT, Meter', joule, meter, sec)
+import Type.Data.Units.SI (AmpereT, Joule, Kg, KgT, Meter, Meter', MeterT, Newton, Ohm, Sec, SecT, Volt, Ampere, ampere, joule, meter, ohm, sec, volt)
 import Unsafe.Coerce (unsafeCoerce)
 
 
@@ -111,8 +111,24 @@ energyInBarOfChocolate = liftV 2_300_000 ** joule
 forceOver5Meter :: Int : Newton ()
 forceOver5Meter = energyInBarOfChocolate // (liftV 5 ** meter)
 
-typeInferenceTest :: Int : Kg P1 * Meter P2 * Sec N3 * ()
+typeInferenceTest :: Measured Int
+  ( kg :: MeasureExp KgT (Pos (Succ Z))
+  , meter :: MeasureExp MeterT (Pos (Succ (Succ Z)))
+  , sec :: MeasureExp SecT (Neg (Succ (Succ (Succ Z))))
+  )
 typeInferenceTest = forceOver5Meter ** liftV 5 ** meter // sec
+
+voltage :: Number -> Number : Volt ()
+voltage v = liftV v ** volt
+
+resistance :: Number -> Number : Ohm ()
+resistance r = liftV r ** ohm
+
+amperage :: Number -> Number : Ampere P1 ()
+amperage a = liftV a ** ampere
+
+isSame :: Boolean
+isSame = (voltage 6.0 // resistance 2.0) == amperage 3.0
 
 
 -- Test custom Measure
@@ -137,4 +153,5 @@ main = do
   logShow ((unsafeCoerce $ liftV 12) :: Int : Meter P5 * Sec N2 ())
   logShow (forceOver5Meter)
   logShow energyInBarOfChocolate
+  logShow isSame
   log "Done"
