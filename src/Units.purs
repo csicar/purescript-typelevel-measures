@@ -1,12 +1,15 @@
 module Type.Data.Units (Measured, kind Measure, MProxy, MeasureExp(..), class Combine, combine, class AddRows, addRows, class InverseRow, class InverseRowList, mult, (**), divide, (//), liftV, add, (++), sub, (-*), type (*), type (:), class ShowMeasure, showMeasure, ShowRow) where
 
 import Prelude
+
 import Data.Array (index)
 import Data.Maybe (Maybe(..))
 import Prelude as Prelude
 import Prim.RowList (kind RowList, Cons, Nil)
-import Type.Data.Peano.Int (class Inverse, class IsInt, class SumInt, IProxy, reflectInt, kind Int)
-import Type.Prelude (class ListToRow, class RowToList, class Union, RLProxy, RProxy)
+import Type.Data.Boolean (class If)
+import Type.Data.Peano.Int (class Inverse, class IsInt, class SumInt, IProxy, Neg, Pos, reflectInt, kind Int, class IsZeroInt)
+import Type.Data.Peano.Nat (Succ, Z)
+import Type.Prelude (class ListToRow, class RowToList, class Union, RLProxy, RProxy, kind Boolean, True, False)
 import Type.Row (RowApply)
 import Unsafe.Coerce (unsafeCoerce)
 
@@ -42,7 +45,7 @@ instance ordMeasured :: (Ord v) => Ord (Measured v u) where
 -- | Example: `Combine (m², m¹, s¹, s¹, kg) (m³, s², kg)`
 class Combine (original :: RowList) (combined :: RowList) | original -> combined
 
-instance combineSame ∷ (SumInt exp1 exp2 exp3, Combine tail tail') => Combine (Cons sym (MeasureExp m exp1) (Cons sym (MeasureExp m exp2) tail)) (Cons sym (MeasureExp m exp3) tail')
+instance combineSame ∷ (SumInt exp1 exp2 exp3, IsZeroInt exp3 isZero, If isZero (RLProxy tail') (RLProxy (Cons sym (MeasureExp m exp3) tail')) (RLProxy result), Combine tail tail') => Combine (Cons sym (MeasureExp m exp1) (Cons sym (MeasureExp m exp2) tail)) result
 else instance combineDifferent :: (Combine rest rest') => Combine (Cons sym1 (MeasureExp m1 exp1) rest) (Cons sym1 (MeasureExp m1 exp1) rest')
 
 instance combineNil :: Combine Nil Nil
