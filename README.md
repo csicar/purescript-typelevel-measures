@@ -2,7 +2,7 @@ Purescript Typelevel Units
 ==========================
 
 
-Library for type-save units of measure.
+Library for type-safe units of measure.
 
 ### Features:
 
