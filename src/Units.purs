@@ -7,12 +7,10 @@ import Data.Maybe (Maybe(..))
 import Prelude as Prelude
 import Prim.RowList (kind RowList, Cons, Nil)
 import Type.Data.Boolean (class If)
-import Type.Data.Peano.Int (class Inverse, class IsInt, class SumInt, IProxy, Neg, Pos, reflectInt, kind Int, class IsZeroInt)
-import Type.Data.Peano.Nat (Succ, Z)
+import Type.Data.Int
 import Type.Prelude (class ListToRow, class RowToList, class Union, RLProxy, RProxy, kind Boolean, True, False)
 import Type.Row (RowApply)
 import Unsafe.Coerce (unsafeCoerce)
-
 undefined :: ∀ a. a
 undefined = unsafeCoerce unit
 
@@ -22,7 +20,7 @@ foreign import kind Measure
 data MProxy (m :: Measure)
 
 -- | Base Measure with an Exponent. Represents `m^exp`
-data MeasureExp (m :: Measure) (exp :: Int)
+data MeasureExp (m :: Measure) (exp :: Symbol)
 
 -- | Represents a value with a List of Measures with Exponents `value [m² * s³]`
 -- |

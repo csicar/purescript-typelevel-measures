@@ -1,25 +1,25 @@
 {
-	"name": "purescript-typelevel-measures",
-	"license": "MIT",
-	"ignore": [
-		"**/.*",
-		"node_modules",
-		"bower_components",
-		"output"
-	],
-	"repository": {
-		"url": "https://github.com/csicar/purescript-typelevel-measures",
-		"type": "git"
-	},
-	"dependencies": {
-		"purescript-prelude": "^4.1.1",
-		"purescript-typelevel-prelude": "^5.0.0",
-		"purescript-console": "^4.2.0",
-		"purescript-effect": "^2.0.1",
-		"purescript-arrays": ">2.0.0",
-		"purescript-typelevel-peano": "^0.1.6"
-	},
-	"devDependencies": {
-		"purescript-psci-support": "^4.0.0"
-	}
+  "name": "purescript-typelevel-measures",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "output"
+  ],
+  "repository": {
+    "url": "https://github.com/csicar/purescript-typelevel-measures",
+    "type": "git"
+  },
+  "dependencies": {
+    "purescript-prelude": "^4.1.1",
+    "purescript-typelevel-prelude": "^5.0.0",
+    "purescript-console": "^4.2.0",
+    "purescript-effect": "^2.0.1",
+    "purescript-arrays": ">2.0.0",
+    "purescript-typelevel-numbers": "https://gitlab.com/csicar/purescript-typelevel-numbers"
+  },
+  "devDependencies": {
+    "purescript-psci-support": "^4.0.0"
+  }
 }

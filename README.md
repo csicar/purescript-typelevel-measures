@@ -23,10 +23,13 @@ distance = liftV 10 ** meter
 > distance -- prints:
 10·m¹
 
-avgSpeed :: Int : Meter' () -> Int : Sec' () -> Int : Meter' * Sec N1 * ()
+> area = distance ** distance
+
+
+avgSpeed :: Int : Meter' () -> Int : Sec' () -> Int : Meter' * Sec "-1" * ()
 avgSpeed a b = a // b
 
-speedOver10m :: Int : Meter' * Sec N1 ()
+speedOver10m :: Int : Meter' * Sec "-1" ()
 speedOver10m = avgSpeed distance (liftV 5 ** sec)
 
 > speedOver10m  -- prints:
@@ -46,10 +49,10 @@ forceOver5Meter = energyInBarOfChocolate // (liftV 5 ** meter)
 
 > :t forceOver5Meter ** liftV 5 ** meter // sec -- what type does it have?
 Int : Kg P1 * Meter P2 * Sec N3 * () -- without Type aliases:
-Measured Int                                           
-  ( kg :: MeasureExp KgT (Pos (Succ Z))                
-  , meter :: MeasureExp MeterT (Pos (Succ (Succ Z)))   
-  , sec :: MeasureExp SecT (Neg (Succ (Succ (Succ Z))))
+Measured Int                      
+  ( kg :: MeasureExp KgT "1"      
+  , meter :: MeasureExp MeterT "2"
+  , sec :: MeasureExp SecT "-3"   
   )
 
 -- add Measured:
