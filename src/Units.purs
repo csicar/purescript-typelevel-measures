@@ -7,9 +7,10 @@ import Data.Maybe (Maybe(..))
 import Prelude as Prelude
 import Prim.RowList (kind RowList, Cons, Nil)
 import Type.Data.Boolean (class If)
-import Type.Data.Peano.Int (class Inverse, class IsInt, class SumInt, IProxy, Neg, Pos, reflectInt, kind Int, class IsZeroInt)
+import Type.Data.Peano.Int (class Inverse, class IsInt, class SumInt, IProxy, Neg, Pos, reflectInt, class IsZeroInt)
+import Type.Data.Peano as Peano
 import Type.Data.Peano.Nat (Succ, Z)
-import Type.Prelude (class ListToRow, class RowToList, class Union, RLProxy, RProxy, kind Boolean, True, False)
+import Type.Prelude (class ListToRow, class RowToList, class Union, RLProxy, RProxy, True, False)
 import Type.Row (RowApply)
 import Unsafe.Coerce (unsafeCoerce)
 
@@ -22,7 +23,7 @@ foreign import kind Measure
 data MProxy (m :: Measure)
 
 -- | Base Measure with an Exponent. Represents `m^exp`
-data MeasureExp (m :: Measure) (exp :: Int)
+data MeasureExp (m :: Measure) (exp :: Peano.Int)
 
 -- | Represents a value with a List of Measures with Exponents `value [m² * s³]`
 -- |
@@ -43,7 +44,7 @@ instance ordMeasured :: (Ord v) => Ord (Measured v u) where
 -- | Combines two sequential same symbols by adding their values
 -- |
 -- | Example: `Combine (m², m¹, s¹, s¹, kg) (m³, s², kg)`
-class Combine (original :: RowList) (combined :: RowList) | original -> combined
+class Combine (original :: RowList Type) (combined :: RowList Type) | original -> combined
 
 instance combineSame ∷ (SumInt exp1 exp2 exp3, IsZeroInt exp3 isZero, If isZero (RLProxy tail') (RLProxy (Cons sym (MeasureExp m exp3) tail')) (RLProxy result), Combine tail tail') => Combine (Cons sym (MeasureExp m exp1) (Cons sym (MeasureExp m exp2) tail)) result
 else instance combineDifferent :: (Combine rest rest') => Combine (Cons sym1 (MeasureExp m1 exp1) rest) (Cons sym1 (MeasureExp m1 exp1) rest')
@@ -62,7 +63,7 @@ instance addRowsCombine :: (Union a b sum, RowToList sum rsum, Combine rsum resu
 addRows :: ∀ a b sum. (AddRows a b sum) => RProxy a -> RProxy b -> RProxy sum
 addRows a b = undefined
 
-class InverseRowList (original :: RowList) (inverted :: RowList) | original -> inverted, inverted -> original
+class InverseRowList (original :: RowList Type) (inverted :: RowList Type) | original -> inverted, inverted -> original
 
 instance inverseNil ∷ InverseRowList Nil Nil
 
@@ -139,7 +140,7 @@ constructPosExp x = case (index unicodeExponents x) of
   Nothing -> constructPosExp (x `div` 10) <> constructPosExp (x `mod` 10)
   Just exp -> exp
 
-data ShowRow (r :: RowList)
+data ShowRow (r :: RowList Type)
 
 instance showRowNil :: Show (ShowRow Nil) where
   show _ = ""
